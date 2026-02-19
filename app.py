@@ -1,8 +1,24 @@
+from functools import wraps
 from flask import Flask, jsonify, request
 import sqlite3
 import hashlib
+import os
+import dotenv
+
+API_TOKEN = os.getenv("API_TOKEN")
 
 app = Flask(__name__)
+
+
+def require_token(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        token = request.headers.get("Authorization")
+        if token != f"Bearer {API_TOKEN}":
+            return jsonify({"error": "Unauthorized"}), 401
+        return f(*args, **kwargs)
+
+    return decorated_function
 
 
 def get_db_connection():
@@ -55,6 +71,7 @@ def get_products():
 
 
 @app.route("/products", methods=["POST"])
+@require_token
 def add_products():
     data = request.get_json()
     name = data.get("name")
@@ -82,18 +99,22 @@ def register():
 
     if not username or not password:
         return jsonify({"error": "Missing username or password"}), 400
-    
+
     hashed_password = hashlib.sha256(password.encode()).hexdigest()
 
     try:
         conn = get_db_connection()
-        conn.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, hashed_password))
+        conn.execute(
+            "INSERT INTO users (username, password) VALUES (?, ?)",
+            (username, hashed_password),
+        )
         conn.commit()
         conn.close()
         return jsonify({"message": "User registered successfully"}), 201
     except sqlite3.IntegrityError:
         conn.close()
         return jsonify({"error": "Username already exists"}), 409
+
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -103,16 +124,20 @@ def login():
 
     if not username or not password:
         return jsonify({"error": "Missing username or password"}), 400
-    
+
     hashed_password = hashlib.sha256(password.encode()).hexdigest()
     conn = get_db_connection()
-    user = conn.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, hashed_password)).fetchone()
+    user = conn.execute(
+        "SELECT * FROM users WHERE username = ? AND password = ?",
+        (username, hashed_password),
+    ).fetchone()
     conn.close()
 
     if user:
         return jsonify({"message": f"Welcome {username}!"})
     else:
         return jsonify({"error": "Invalid credentials"}), 401
+
 
 if __name__ == "__main__":
     with app.app_context():
