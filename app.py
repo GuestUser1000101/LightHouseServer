@@ -1,5 +1,6 @@
 import json
 import os
+import time
 
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
@@ -33,6 +34,7 @@ class ScoutingData(db.Model):
     content = db.Column(db.Text, nullable=False)
 
 
+time.sleep(5)
 with app.app_context():
     db.create_all()
 
