@@ -1,6 +1,3 @@
-# Python Backend API
+# LightHouse Server Testing
 
-- User Authentication
-- SQLite database
-- Free Deployment on Render
-- Products adding and viewing
+- WIP
