@@ -2,6 +2,9 @@ import os
 import json
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 
