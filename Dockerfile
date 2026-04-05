@@ -1,3 +1,5 @@
+# I'm guessing this dockerfile is now very out of date
+# because of the transition to uv
 FROM python:3.12-slim
 
 WORKDIR /app
