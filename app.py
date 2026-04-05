@@ -1,13 +1,14 @@
 import json
+import logging
 import os
 import time
-import logging
+
 from dotenv import load_dotenv
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, render_template, request
 from flask_sqlalchemy import SQLAlchemy
+
 from security import generate_random_key, get_as_hashed
 from tba_client import TBAClient
-
 
 load_dotenv()
 
@@ -124,6 +125,11 @@ def get_one_time_key():
     return raw_key, 200
 
 
+@app.route("/gen", methods=["GET"])
+def get_key_generator_page():
+    return render_template("gen.html")
+
+
 @app.route("/secure/create", methods=["POST"])
 def register_device():
     raw_key = request.headers.get("key")
@@ -221,6 +227,8 @@ def handle_data(category):
     if request.method == "POST":
         try:
             uuid = request.headers.get("X-API-KEY")
+            if not uuid:
+                return "Unauthorized", 401
             existing = SecurityData.query.filter_by(uuid=get_as_hashed(uuid)).first()
             if not existing:
                 return "Unauthorized", 401
