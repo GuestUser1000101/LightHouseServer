@@ -160,6 +160,7 @@ def wipe_all():
     db.create_all()
     if not ConfigData.query.first():
         db.session.add(ConfigData(event_key="2026nrg"))
+        db.session.commit()
 
     return "Database wiped", 200
 
