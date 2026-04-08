@@ -1,0 +1,15 @@
+[project]
+name = "LightHouseServer"
+version = "0.1.0"
+description = "A server for the FRC scouting app, LightHouse, by NRG 948."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "dotenv>=0.9.9",
+    "flask==3.0.2",
+    "flask-sqlalchemy==3.1.1",
+    "gunicorn==21.2.0",
+    "psycopg2-binary==2.9.9",
+    "python-dotenv==1.0.1",
+    "requests==2.32.5",
+]
